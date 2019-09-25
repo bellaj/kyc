@@ -1,0 +1,421 @@
+swagger: "2.0"
+info:
+  description: "KYC API"
+  version: "1.0.0"
+  title: "KYC API"
+  termsOfService: "http://kyc.io/terms/"
+  contact:
+    email: "apiteam@kyc.io"
+ 
+host: "api.kyc.io"
+basePath: "/v2"
+tags:
+- name: "Shared KYC "
+  description: "KYC API"
+ 
+- name: "organisme"
+  description: "Organismes management"
+- name: "client"
+  description: "Operations about user"
+ 
+schemes:
+- "https"
+- "http"
+paths:
+
+  /organisme:
+    post:
+      tags:
+      - "organisme"
+      summary: "Add a new organisme to the KYC network"
+      description: ""
+      operationId: "addOrganisme"
+      consumes:
+      - "application/json"
+      produces:
+       - "application/json"
+      parameters:
+      - in: "query"
+        name: "name"
+        type: "string"
+        description: "person object that needs to be added to the store"
+        required: true
+ 
+      responses:
+        405:
+          description: "Invalid input"
+          
+  /organisme/{oid}/clients:
+    post:
+      tags:
+      - "organisme"
+      summary: "Add a new organisme to the KYC"
+      description: ""
+      operationId: "getAllClients"
+      consumes:
+      - "application/json"
+      produces:
+       - "application/json"
+      parameters:
+      - in: "path"
+        name: "oid"
+        type: "string"
+        required: true
+ 
+      responses:
+        405:
+          description: "Invalid input" 
+ 
+  /client:
+    post:
+      tags:
+      - "client"
+      summary: "Enroll a new client"
+      description: "The first step in the kyc process"
+      operationId: "addClient"
+      consumes:
+      - "application/json"
+      produces:
+       - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "client object that needs to be added"
+        required: true
+        schema:
+          $ref: "#/definitions/Client"
+      responses:
+        405:
+          description: "Invalid input" 
+
+  /client/{uuid}:
+    put:
+      tags:
+      - "client"
+      summary: "Update an existing client"
+      description: ""
+      operationId: "updateClient"
+      consumes:
+      - "application/json"
+      produces:
+       - "application/json"
+      parameters:
+      - in: "path"
+        name: "uuid"
+        type: "string"
+        description: "use object that needs to be updated"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "use object that needs to be updated"
+        required: true
+        schema:
+          $ref: "#/definitions/Client"
+      responses:
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Client not found"
+        405:
+          description: "Validation exception"
+ 
+  /client/validateByCin:
+    get:
+      tags:
+      - "client"
+      summary: "validate client's status"
+      description: "fetch client by cin and validate its status"
+      operationId: "validateByCin"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "status"
+        in: "query"
+        description: "Status values that need to be considered for filter"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "available"
+          - "pending"
+          - "sold"
+          default: "available"
+        collectionFormat: "multi"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Client"
+        400:
+          description: "Invalid status value"
+          
+  /client/validateByUuid:
+    get:
+      tags:
+      - "client"
+      summary: "validate client's status"
+      description: "fetch client by Uiid and validate its status"
+      operationId: "validateByUuid"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "status"
+        in: "query"
+        description: "Status values that need to be considered for filter"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "available"
+          - "pending"
+          - "sold"
+          default: "available"
+        collectionFormat: "multi"
+      responses:
+        200:
+          description: "successful operation"
+
+        400:
+          description: "Invalid status value"
+          
+  /client/rejectByCin:
+    get:
+      tags:
+      - "client"
+      summary: "Reject client's enrollement"
+      description: "Fetch client by Cin and reject his enrollement request"
+      operationId: "rejectByCin"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "status"
+        in: "query"
+        description: "Status values that need to be considered for filter"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "available"
+          - "pending"
+          - "sold"
+          default: "available"
+        collectionFormat: "multi"
+      responses:
+        200:
+          description: "successful operation"
+ 
+        400:
+          description: "Invalid status value"
+          
+  /client/rejectByUuid:
+    get:
+      tags:
+      - "client"
+      summary: "Reject client's enrollement"
+      description: "Multiple status values can be provided with comma separated strings"
+      operationId: "rejectByUuid"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "uuid"
+        in: "query"
+        description: "Status values that need to be considered for filter"
+        required: true
+        type: "string"
+        
+      - name: "status"
+        in: "query"
+        description: "Status values that need to be considered for filter"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "available"
+          - "pending"
+          - "sold"
+          default: "available"
+        collectionFormat: "multi"
+      responses:
+        200:
+          description: "successful operation"
+ 
+        400:
+          description: "Invalid status value"
+          
+  /client/checkByCin:
+    get:
+      tags:
+      - "client"
+      summary: "Check clients status by CIN"
+      description: "Check the status of a client identified by his CIN"
+      operationId: "checkByCin"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "status"
+        in: "query"
+        description: "Status values that need to be considered for filter"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "available"
+          - "pending"
+          - "sold"
+          default: "available"
+        collectionFormat: "multi"
+      responses:
+        200:
+          description: "successful operation"
+ 
+        400:
+          description: "Invalid status value"
+          
+  /client/checkByUuid:
+    get:
+      tags:
+      - "client"
+      summary: "Check clients status by UUID"
+      description: "Check the status of a client identified by his UUID"
+      operationId: "checkByUuid"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "status"
+        in: "query"
+        description: "Status values that need to be considered for filter"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "available"
+          - "pending"
+          - "sold"
+          default: "available"
+        collectionFormat: "multi"
+      responses:
+        200:
+          description: "successful operation"
+ 
+        400:
+          description: "Invalid status value"
+          
+  /client/addOwner:
+    get:
+      tags:
+      - "client"
+      summary: "Add organisme "
+      description: "Add the right to access client's details to an organisme"
+      operationId: "addOwner"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "oid"
+        in: "query"
+        description: "Status values that need to be considered for filter"
+        required: true
+        type: "string"
+ 
+      responses:
+        200:
+          description: "successful operation"
+ 
+        400:
+          description: "Invalid status value"
+          
+          
+          
+          
+securityDefinitions:
+  petstore_auth:
+    type: "oauth2"
+    authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
+    flow: "implicit"
+    scopes:
+      write:pets: "modify pets in your account"
+      read:pets: "read your pets"
+  api_key:
+    type: "apiKey"
+    name: "api_key"
+    in: "header"
+definitions:
+ 
+  Organisme:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+    xml:
+      name: "Category"
+      
+  kycValidation:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+    xml:
+      name: "kycValidation"
+      
+  Client:
+    type: "object"
+    properties:
+      uuid:
+        type: "integer"
+        format: "int64"
+      username:
+        type: "string"
+      firstName:
+        type: "string"
+      lastName:
+        type: "string"
+      email:
+        type: "string"
+      password:
+        type: "string"
+      phone:
+        type: "string"
+      userStatus:
+        type: "integer"
+        format: "int32"
+        description: "client Status"
+    xml:
+      name: "client"
+      
+  Tag:
+    type: "object"
+    properties:
+      uuid:
+        type: "integer"
+        format: "int64"
+      status:
+        type: "string"
+ 
+ 
+  ApiResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"
+        
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"

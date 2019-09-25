@@ -32,7 +32,11 @@ function addClient (string memory cin, uint  tel) public {
      }
      
      
-function validateClientKyc (string memory uuid) public {
+function validateClientByUuid (string memory uuid) public {
+         
+     }
+     
+function validateClientByCin (string memory uuid) public {
          
      }
      

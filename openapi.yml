@@ -376,8 +376,7 @@ definitions:
       uuid:
         type: "integer"
         format: "int64"
-      username:
-        type: "string"
+
       firstName:
         type: "string"
       lastName:
@@ -391,7 +390,7 @@ definitions:
       userStatus:
         type: "integer"
         format: "int32"
-        description: "client Status"
+        description: "client Status: 0:unvalid , 1 : valid, -1: pending"
     xml:
       name: "client"
       

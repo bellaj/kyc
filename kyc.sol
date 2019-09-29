@@ -24,19 +24,20 @@ contract kyc {
     mapping (address => string) affiliations; //msg.sender=>oid maping personal eth address to organism oid
     mapping (string=> string[]) ownership; //uuid =>list oids
     
-    function addpersonel(string memory oid,address personel) public {
-        
-        affiliations[personel]=oid;
-    }
 
 
 
     function addOrganisme (string memory oid,string memory name) public returns (bool){//oid and organime's name //return oid wich will be the hash of the name to use it in the front end also
      
-     addpersonel(oid,msg.sender);
-     organismes[oid]=Organisme({oid: oid, name: name});
+    addpersonel(oid,msg.sender);
+    organismes[oid]=Organisme({oid: oid, name: name});
     return true;
          }
+         
+    function addpersonel(string memory oid,address personel) public {
+        
+        affiliations[personel]=oid;
+    }
 
     event clientAdded(string indexed uuid, string indexed cin, uint tel, string oid, string status, uint date);        
     function addClient (string memory uuid, string memory cin, uint  tel ,string memory oid) public returns (bool) {
@@ -79,14 +80,14 @@ contract kyc {
          
     event clientBlocked(string indexed uuid, string indexed cin, uint tel, string status, string date);        
 
-    function blockClientKycbyuuid (string memory uuid) public returns (bool) {
-               clients[uuid].status="blocked";
+    function invalidateClientKycbyuuid (string memory uuid) public returns (bool) {
+               clients[uuid].status="unvalid";
              return true;
          }
         
-     function blockClientByCin (string memory cin) public returns (bool) {
+     function invalidateClientByCin (string memory cin) public returns (bool) {
              string memory uuid= cinToUuid[cin];
-             clients[uuid].status="blocked";
+             clients[uuid].status="unvalid";
              return true;
          }        
          

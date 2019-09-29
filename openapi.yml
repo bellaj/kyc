@@ -38,20 +38,26 @@ paths:
       - in: "query"
         name: "name"
         type: "string"
-        description: "person object that needs to be added to the store"
+        description: "Organisme name"
         required: true
- 
+      - in: "query"
+        name: "oid"
+        type: "string"
+        description: "Organisme Id"
+        required: true
       responses:
         405:
           description: "Invalid input"
+        404:
+          description: "not found"
           
-  /organisme/{oid}/clients:
+  /organisme/{oid}/personel/{address}:
     post:
       tags:
       - "organisme"
-      summary: "Add a new organisme to the KYC"
+      summary: "assign a new personel to an organimse"
       description: ""
-      operationId: "getAllClients"
+      operationId: "addPersonel"
       consumes:
       - "application/json"
       produces:
@@ -61,6 +67,12 @@ paths:
         name: "oid"
         type: "string"
         required: true
+        
+      - in: "path"
+        name: "address"
+        type: "string"
+        description: "blockchain address"
+        required: true 
  
       responses:
         405:
@@ -71,7 +83,7 @@ paths:
       tags:
       - "client"
       summary: "Enroll a new client"
-      description: "The first step in the kyc process"
+      description: "Enroll a new client by a an organisme"
       operationId: "addClient"
       consumes:
       - "application/json"
@@ -92,7 +104,7 @@ paths:
     put:
       tags:
       - "client"
-      summary: "Update an existing client"
+      summary: "Update an existing client identified by iuud"
       description: ""
       operationId: "updateClient"
       consumes:
@@ -119,7 +131,7 @@ paths:
         405:
           description: "Validation exception"
  
-  /client/validateByCin:
+  /client/validateByCin/{cin}:
     get:
       tags:
       - "client"
@@ -129,19 +141,16 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "status"
-        in: "query"
-        description: "Status values that need to be considered for filter"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-          enum:
-          - "available"
-          - "pending"
-          - "sold"
-          default: "available"
-        collectionFormat: "multi"
+      - in: "path"
+        name: "cin"
+        type: "string"
+        required: true 
+      - in: "query"
+        name: "address"
+        type: "string"
+        description: "Sender's Blockchain address"
+        required: true   
+        
       responses:
         200:
           description: "successful operation"
@@ -152,7 +161,7 @@ paths:
         400:
           description: "Invalid status value"
           
-  /client/validateByUuid:
+  /client/validateByUuid/{uuid}:
     get:
       tags:
       - "client"
@@ -162,19 +171,10 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "status"
-        in: "query"
-        description: "Status values that need to be considered for filter"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-          enum:
-          - "available"
-          - "pending"
-          - "sold"
-          default: "available"
-        collectionFormat: "multi"
+      - in: "path"
+        name: "uuid"
+        type: "string"
+        required: true 
       responses:
         200:
           description: "successful operation"
@@ -182,29 +182,20 @@ paths:
         400:
           description: "Invalid status value"
           
-  /client/rejectByCin:
+  /client/invalidateByCin/{cin}:
     get:
       tags:
       - "client"
-      summary: "Reject client's enrollement"
-      description: "Fetch client by Cin and reject his enrollement request"
-      operationId: "rejectByCin"
+      summary: "invalidate client's enrollement"
+      description: "invalidate client's kyc status. User is identified by CIN"
+      operationId: "invalidateByCin"
       produces:
       - "application/json"
       parameters:
-      - name: "status"
-        in: "query"
-        description: "Status values that need to be considered for filter"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-          enum:
-          - "available"
-          - "pending"
-          - "sold"
-          default: "available"
-        collectionFormat: "multi"
+      - in: "path"
+        name: "cin"
+        type: "string"
+        required: true 
       responses:
         200:
           description: "successful operation"
@@ -212,35 +203,22 @@ paths:
         400:
           description: "Invalid status value"
           
-  /client/rejectByUuid:
+  /client/invalidateByUuid/{uuid}:
     get:
       tags:
       - "client"
       summary: "Reject client's enrollement"
-      description: "Multiple status values can be provided with comma separated strings"
-      operationId: "rejectByUuid"
+      description: "invalidate client's kyc status. User is identified by an uuid"
+      operationId: "invalidateByUuid"
       produces:
       - "application/json"
       parameters:
       - name: "uuid"
-        in: "query"
+        in: "path"
         description: "Status values that need to be considered for filter"
         required: true
         type: "string"
         
-      - name: "status"
-        in: "query"
-        description: "Status values that need to be considered for filter"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-          enum:
-          - "available"
-          - "pending"
-          - "sold"
-          default: "available"
-        collectionFormat: "multi"
       responses:
         200:
           description: "successful operation"
@@ -248,29 +226,20 @@ paths:
         400:
           description: "Invalid status value"
           
-  /client/checkByCin:
+  /client/checkByCin/{cin}:
     get:
       tags:
       - "client"
       summary: "Check clients status by CIN"
-      description: "Check the status of a client identified by his CIN"
+      description: "Check the status of a client identified by CIN"
       operationId: "checkByCin"
       produces:
       - "application/json"
       parameters:
-      - name: "status"
-        in: "query"
-        description: "Status values that need to be considered for filter"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-          enum:
-          - "available"
-          - "pending"
-          - "sold"
-          default: "available"
-        collectionFormat: "multi"
+      - in: "path"
+        name: "cin"
+        type: "string"
+        required: true 
       responses:
         200:
           description: "successful operation"
@@ -278,29 +247,20 @@ paths:
         400:
           description: "Invalid status value"
           
-  /client/checkByUuid:
+  /client/checkByUuid/{uuid}:
     get:
       tags:
       - "client"
       summary: "Check clients status by UUID"
-      description: "Check the status of a client identified by his UUID"
+      description: "Check the status of a client identified by  UUID"
       operationId: "checkByUuid"
       produces:
       - "application/json"
       parameters:
-      - name: "status"
-        in: "query"
-        description: "Status values that need to be considered for filter"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-          enum:
-          - "available"
-          - "pending"
-          - "sold"
-          default: "available"
-        collectionFormat: "multi"
+      - in: "path"
+        name: "uuid"
+        type: "string"
+        required: true 
       responses:
         200:
           description: "successful operation"
@@ -308,7 +268,7 @@ paths:
         400:
           description: "Invalid status value"
           
-  /client/addOwner:
+  /client/{uuid}/addOwnerOrganisme/{oid}:
     get:
       tags:
       - "client"
@@ -319,8 +279,13 @@ paths:
       - "application/json"
       parameters:
       - name: "oid"
-        in: "query"
-        description: "Status values that need to be considered for filter"
+        in: "path"
+        description: "Organisme ID"
+        required: true
+        type: "string"
+      - name: "uuid"
+        in: "path"
+        description: "Client uuid"
         required: true
         type: "string"
  
@@ -337,11 +302,11 @@ paths:
 securityDefinitions:
   petstore_auth:
     type: "oauth2"
-    authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
+    authorizationUrl: "http://kyc.swagger.io/oauth/dialog"
     flow: "implicit"
     scopes:
       write:pets: "modify pets in your account"
-      read:pets: "read your pets"
+      read:pets: "read your kyc status"
   api_key:
     type: "apiKey"
     name: "api_key"
@@ -351,9 +316,8 @@ definitions:
   Organisme:
     type: "object"
     properties:
-      id:
-        type: "integer"
-        format: "int64"
+      oid:
+        type: "string"
       name:
         type: "string"
     xml:
@@ -362,10 +326,9 @@ definitions:
   kycValidation:
     type: "object"
     properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
+      uuid:
+        type: "string"
+      status:
         type: "string"
     xml:
       name: "kycValidation"
@@ -388,9 +351,8 @@ definitions:
       phone:
         type: "string"
       userStatus:
-        type: "integer"
-        format: "int32"
-        description: "client Status: 0:unvalid , 1 : valid, -1: pending"
+        type: "string"
+        description: "client Status: unvalid ,valid, pending"
     xml:
       name: "client"
       

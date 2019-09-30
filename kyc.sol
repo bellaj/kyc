@@ -39,10 +39,20 @@ contract kyc {
         affiliations[personel]=oid;
     }
 
-    event clientAdded(string indexed uuid, string indexed cin, uint tel, string oid, string status, uint date);        
-    function addClient (string memory uuid, string memory cin, uint  tel ,string memory oid) public returns (bool) {
+    event clientAdded(string indexed uuid, string indexed cin, uint tel, string oid, string status, uint date);       
+    
+      function addClientUsingAddress (string memory uuid, string memory cin, uint  tel) public returns (bool) {
+        string senderOid=affiliations[msg.sender]
+        clients[uuid]=Client({uuid:uuid,cin:cin, tel:tel, status:"pending"});
+        ownership[uuid].push(senderOid);
+        cinToUuid[cin]=uuid;
+        emit clientAdded(uuid,cin,tel,senderOid,"pending",now);
+        return true;
+
+         }
+    
+    function addClientUsingOid (string memory uuid, string memory cin, uint  tel ,string memory oid) public returns (bool) {
         
-         ///owners.push("nnn");
         clients[uuid]=Client({uuid:uuid,cin:cin, tel:tel, status:"pending"});
         ownership[uuid].push(oid);
         cinToUuid[cin]=uuid;

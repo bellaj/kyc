@@ -7,17 +7,18 @@ info:
   contact:
     email: "apiteam@kyc.io"
  
-host: "127.0.0.1:8081"
+host: "127.0.0.1:8090"
 basePath: "/v2"
 tags:
-
+- name: "Shared KYC "
+  description: "KYC API"
+ 
 - name: "organisme"
   description: "Organismes management"
 - name: "client"
   description: "Operations about user"
  
 schemes:
-- "https"
 - "http"
 paths:
 
@@ -43,20 +44,13 @@ paths:
         type: "string"
         description: "Organisme Id"
         required: true
-        
       responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref:  "#/definitions/ApiResponse"
         405:
           description: "Invalid input"
         404:
           description: "not found"
           
-  /organisme/{oid}/personel/{oid}:
+  /organisme/{oid}/personel/{address}:
     post:
       tags:
       - "organisme"
@@ -80,12 +74,6 @@ paths:
         required: true 
  
       responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref:  "#/definitions/ApiResponse"
         405:
           description: "Invalid input" 
  
@@ -94,7 +82,7 @@ paths:
       tags:
       - "client"
       summary: "Enroll a new client"
-      description: "Enroll a new client for an organisme"
+      description: "Enroll a new client by a an organisme"
       operationId: "addClient"
       consumes:
       - "application/json"
@@ -107,18 +95,7 @@ paths:
         required: true
         schema:
           $ref: "#/definitions/Client"
-      - in: "query"
-        name: "oid"
-        description: "Id of the organisme enrolling the client"
-        type: "string"
-        required: false   
       responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref:  "#/definitions/ApiResponse"
         405:
           description: "Invalid input" 
 
@@ -127,7 +104,7 @@ paths:
       tags:
       - "client"
       summary: "Update an existing client identified by iuud"
-      description: "Update an existing client identified by iuud"
+      description: ""
       operationId: "updateClient"
       consumes:
       - "application/json"
@@ -146,12 +123,8 @@ paths:
         schema:
           $ref: "#/definitions/Client"
       responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref:  "#/definitions/ApiResponse"
+        400:
+          description: "Invalid ID supplied"
         404:
           description: "Client not found"
         405:
@@ -171,12 +144,10 @@ paths:
         name: "cin"
         type: "string"
         required: true 
-        description: "User's CIN"
-
       - in: "query"
-        name: "oid"
+        name: "address"
         type: "string"
-        description: "organisme's ID"
+        description: "Sender's Blockchain address"
         required: true   
         
       responses:
@@ -185,7 +156,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref:  "#/definitions/ApiResponse"
+              $ref: "#/definitions/Client"
         400:
           description: "Invalid status value"
           
@@ -202,16 +173,10 @@ paths:
       - in: "path"
         name: "uuid"
         type: "string"
-        description: "uuid : User unique Id"
         required: true 
-        
       responses:
         200:
           description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref:  "#/definitions/ApiResponse"
 
         400:
           description: "Invalid status value"
@@ -230,14 +195,9 @@ paths:
         name: "cin"
         type: "string"
         required: true 
-        description: "User's CIN"
       responses:
         200:
           description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref:  "#/definitions/ApiResponse"
  
         400:
           description: "Invalid status value"
@@ -261,10 +221,6 @@ paths:
       responses:
         200:
           description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref:  "#/definitions/ApiResponse"
  
         400:
           description: "Invalid status value"
@@ -286,10 +242,6 @@ paths:
       responses:
         200:
           description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref:  "#/definitions/StatusTag"
  
         400:
           description: "Invalid status value"
@@ -311,10 +263,6 @@ paths:
       responses:
         200:
           description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref:  "#/definitions/StatusTag"
  
         400:
           description: "Invalid status value"
@@ -339,13 +287,10 @@ paths:
         description: "Client uuid"
         required: true
         type: "string"
+ 
       responses:
         200:
           description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref:  "#/definitions/ApiResponse"
  
         400:
           description: "Invalid status value"
@@ -377,7 +322,16 @@ definitions:
     xml:
       name: "Category"
       
- 
+  kycValidation:
+    type: "object"
+    properties:
+      uuid:
+        type: "string"
+      status:
+        type: "string"
+    xml:
+      name: "kycValidation"
+      
   Client:
     type: "object"
     properties:
@@ -391,17 +345,15 @@ definitions:
         type: "string"
       email:
         type: "string"
-      password:
-        type: "string"
       phone:
         type: "string"
       userStatus:
         type: "string"
-        description: "client Status: unvalid ,valid, pending"
+        description: "client Status: rejeté ,validé, pending"
     xml:
       name: "client"
       
-  StatusTag:
+  Tag:
     type: "object"
     properties:
       uuid:
@@ -409,10 +361,8 @@ definitions:
         format: "int64"
       status:
         type: "string"
-        enum: [valid, pending, invalid]
-        example: "approved"
  
-
+ 
   ApiResponse:
     type: "object"
     properties:
@@ -421,8 +371,9 @@ definitions:
         format: "int32"
       type:
         type: "string"
-        enum: [error, response]
-        example: "error" 
       message:
         type: "string"
- 
+        
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
